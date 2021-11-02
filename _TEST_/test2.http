@@ -1,8 +1,0 @@
-POST http://localhost:8000/verify/checkCode
-Content-Type: application/json
-
-{
-  "encryptedCode": "bFikmoD+AUSkrqWC/6n1prJeOklTXf4GTQ6DKvL5yKA3Ig==",
-  "decryptedCode": "396088",
-  "sentDate": "2021-11-02 10:19:22 PM"
-}
