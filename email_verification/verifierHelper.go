@@ -9,6 +9,7 @@ import (
 	"fmt"
 	emailverifier "github.com/AfterShip/email-verifier"
 	"io"
+	"net/smtp"
 )
 
 var (
@@ -95,4 +96,33 @@ func generateOTP(length int) (string, error) {
 	}
 
 	return string(buffer), nil
+}
+
+func sendEmail(code, mail string) {
+	//put ur e-mail address that you want to sent e-mail by.
+	from := "example@gmail.com"
+	//put your email' password!!!
+	pass := "examplePassword"
+
+	to := []string{
+		mail,
+	}
+
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+	message := []byte("To: " + mail + "\r\n" +
+		"Subject: Verification Code\r\n" +
+		"\r\n" +
+		"Hello dear,\r\n" + "Your code is\n" +
+		code)
+
+	auth := smtp.PlainAuth("", from, pass, smtpHost)
+
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Email Is Successfully sent.")
+
 }

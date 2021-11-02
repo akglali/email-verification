@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/smtp"
 	"time"
 )
 
@@ -92,33 +91,5 @@ func checkVerificationCode(c *gin.Context) {
 			c.JSON(400, "Check your code !!")
 		}
 	}
-
-}
-
-func sendEmail(code, mail string) {
-	//put ur e-mail address that you want to sent e-mail by.
-	from := "exampleMail@gmail.com"
-	pass := "examplePass"
-
-	to := []string{
-		mail,
-	}
-
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	message := []byte("To: " + mail + "\r\n" +
-		"Subject: Verification Code\r\n" +
-		"\r\n" +
-		"Hello dear,\r\n" + "Your code is\n" +
-		code)
-
-	auth := smtp.PlainAuth("", from, pass, smtpHost)
-
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Email Is Successfully sent.")
 
 }

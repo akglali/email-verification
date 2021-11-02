@@ -2,5 +2,5 @@ POST http://localhost:8000/verify/sendCode
 Content-Type: application/json
 
 {
-  "email": "gulberk58@gmail.com"
+  "email": "akgol97_@hotmail.com"
 }
