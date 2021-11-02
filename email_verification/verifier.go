@@ -16,6 +16,7 @@ var (
 	otpChars = "1234567890"
 )
 
+// checking is mail valid or not!
 func emailIsValid(email string) bool {
 
 	ret, err := verifier.Verify(email)
@@ -33,6 +34,8 @@ func emailIsValid(email string) bool {
 	return true
 
 }
+
+//encryption part is provided here
 func encryptAES(plaintext []byte, key []byte) (ciphertext []byte, err error) {
 	k := sha256.Sum256(key)
 	block, err := aes.NewCipher(k[:])
@@ -54,6 +57,7 @@ func encryptAES(plaintext []byte, key []byte) (ciphertext []byte, err error) {
 	return gcm.Seal(nonce, nonce, plaintext, nil), nil
 }
 
+//decryption part is provided here
 func decryptAES(ciphertext []byte, key []byte) (plaintext []byte, err error) {
 	k := sha256.Sum256(key)
 	block, err := aes.NewCipher(k[:])
@@ -77,7 +81,7 @@ func decryptAES(ciphertext []byte, key []byte) (plaintext []byte, err error) {
 	)
 }
 
-
+//6 digits code is generated!
 func generateOTP(length int) (string, error) {
 	buffer := make([]byte, length)
 	_, err := rand.Read(buffer)

@@ -33,13 +33,15 @@ func sendVerificationCode(c *gin.Context) {
 	}
 	currentTime := time.Now().Format("2006-01-02 3:4:5 PM")
 	code, _ := generateOTP(6)
+	//email is got by user
 	sendEmail(code, body.Email)
 	encryptedCode, err := encryptAES([]byte(code), []byte(key))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
+	//sent the current time as well to save on local storage or phone storage.
+	//You can save the time on ur database to check it
 	c.JSON(200, gin.H{
 		"encryptedCode": encryptedCode,
 		"sent_date":     currentTime,
@@ -60,6 +62,8 @@ func checkVerificationCode(c *gin.Context) {
 	}
 	layout := "2006-01-02 3:4:5 PM"
 	currentTime := time.Now().Format(layout)
+
+	// I am parsing the times, so we can compare two times according to same Location
 	sentDate, err := time.Parse(layout, body.SentDate)
 	currentTimeParse, err := time.Parse(layout, currentTime)
 
@@ -68,7 +72,6 @@ func checkVerificationCode(c *gin.Context) {
 
 	//getting differences as seconds
 	second := int(diff.Seconds())
-
 
 	encryptCode, _ := base64.StdEncoding.DecodeString(body.EncryptedCode)
 
@@ -79,18 +82,16 @@ func checkVerificationCode(c *gin.Context) {
 	}
 	code := body.DecryptedCode
 
-	if second>30{
-		c.JSON(400,"Your code is expired")
+	if second > 30 {
+		c.JSON(400, "Your code is expired")
 		return
-	}else{
+	} else {
 		if code == string(decryptedCode) {
-			c.JSON(200,"Verification is completed!")
-		}else{
-			c.JSON(400,"Check your code !!")
+			c.JSON(200, "Verification is completed!")
+		} else {
+			c.JSON(400, "Check your code !!")
 		}
 	}
-
-
 
 }
 
