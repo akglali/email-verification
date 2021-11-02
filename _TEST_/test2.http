@@ -1,0 +1,8 @@
+POST http://localhost:8000/verify/checkCode
+Content-Type: application/json
+
+{
+  "encryptedCode": "PpFTigPra718TCVF2X07cn7tO2Yenz2hLhu9VE2dzLVcNg==",
+  "decryptedCode": "567701",
+  "sentDate": "2021-11-02 10:06:32 PM"
+}
