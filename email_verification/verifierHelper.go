@@ -5,11 +5,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	emailverifier "github.com/AfterShip/email-verifier"
 	"io"
 	"net/smtp"
+	"strings"
 )
 
 var (
@@ -125,4 +127,18 @@ func sendEmail(code, mail string) {
 	}
 	fmt.Println("Email Is Successfully sent.")
 
+}
+
+func splitString(token string) (string, string, string) {
+	encryptCodeBase64, _ := base64.StdEncoding.DecodeString(token)
+	decryptedCode, err := decryptAES(encryptCodeBase64, []byte(key))
+	if err != nil {
+		fmt.Println(err)
+		return "", "", ""
+	}
+	splitToken := strings.Split(string(decryptedCode), ",")
+	code := splitToken[0]
+	sentTime := splitToken[1]
+	email := splitToken[2]
+	return code, sentTime, email
 }

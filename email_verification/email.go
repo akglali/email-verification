@@ -2,15 +2,14 @@ package email_verification
 
 import (
 	"email-verification/helpers"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
 )
 
-//u can define any key with 32 bits
-var key = "alisultaniseviyor"
+//u can define any key
+var key = "verysecurekey"
 
 func SetupVerification(rg *gin.RouterGroup) {
 	rg.POST("/sendCode", sendVerificationCode)
@@ -34,7 +33,9 @@ func sendVerificationCode(c *gin.Context) {
 	code, _ := generateOTP(6)
 	//email is got by user
 	sendEmail(code, body.Email)
-	encryptedCode, err := encryptAES([]byte(code), []byte(key))
+	token := code + "," + currentTime + "," + body.Email
+	fmt.Println(token)
+	encryptedCode, err := encryptAES([]byte(token), []byte(key))
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -43,7 +44,6 @@ func sendVerificationCode(c *gin.Context) {
 	//You can save the time on ur database to check it
 	c.JSON(200, gin.H{
 		"encryptedCode": encryptedCode,
-		"sent_date":     currentTime,
 	})
 }
 
@@ -61,9 +61,11 @@ func checkVerificationCode(c *gin.Context) {
 	}
 	layout := "2006-01-02 3:4:5 PM"
 	currentTime := time.Now().Format(layout)
+	//Let!s get 3 element from the token,(1st one is code,2nd one is time,3rd one is the email)
+	code, sentTime, email := splitString(body.EncryptedCode)
 
 	// I am parsing the times, so we can compare two times according to same Location
-	sentDate, err := time.Parse(layout, body.SentDate)
+	sentDate, err := time.Parse(layout, sentTime)
 	currentTimeParse, err := time.Parse(layout, currentTime)
 
 	//getting the differences
@@ -72,23 +74,18 @@ func checkVerificationCode(c *gin.Context) {
 	//getting differences as seconds
 	second := int(diff.Seconds())
 
-	encryptCode, _ := base64.StdEncoding.DecodeString(body.EncryptedCode)
-
-	decryptedCode, err := decryptAES(encryptCode, []byte(key))
-	if err != nil {
-		fmt.Println(err)
+	// if user change any of letter from the token we provided,user will be faced with an error
+	if !emailIsValid(email) {
+		helpers.MyAbort(c, "Check your email type!!!")
 		return
-	}
-	code := body.DecryptedCode
-
-	if second > 30 {
+	} else if second > 30 {
 		c.JSON(400, "Your code is expired")
 		return
 	} else {
-		if code == string(decryptedCode) {
+		if code == string(body.Code) {
 			c.JSON(200, "Verification is completed!")
 		} else {
-			c.JSON(400, "Check your code !!")
+			c.JSON(400, "Check your code!!")
 		}
 	}
 
