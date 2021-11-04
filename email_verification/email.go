@@ -59,6 +59,7 @@ func checkVerificationCode(c *gin.Context) {
 		helpers.MyAbort(c, "Bad Format!")
 		return
 	}
+	fmt.Println(body)
 	layout := "2006-01-02 3:4:5 PM"
 	currentTime := time.Now().Format(layout)
 	//Let!s get 3 element from the token,(1st one is code,2nd one is time,3rd one is the email)
@@ -79,13 +80,16 @@ func checkVerificationCode(c *gin.Context) {
 		helpers.MyAbort(c, "Check your email type!!!")
 		return
 	} else if second > 30 {
-		c.JSON(400, "Your code is expired")
+		helpers.MyAbort(c, "Your code is expired")
 		return
+
 	} else {
-		if code == string(body.Code) {
+		if code == body.Code {
 			c.JSON(200, "Verification is completed!")
+			return
 		} else {
-			c.JSON(400, "Check your code!!")
+			helpers.MyAbort(c, "Check your code!!")
+			return
 		}
 	}
 
