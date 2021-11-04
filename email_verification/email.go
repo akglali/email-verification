@@ -73,13 +73,16 @@ func checkVerificationCode(c *gin.Context) {
 	diff := currentTimeParse.Sub(sentDate)
 
 	//getting differences as seconds
-	second := int(diff.Seconds())
+	//diff.Seconds() gets time differences as seconds
+	//diff.Hours() gets time differences as hours
+	second := int(diff.Minutes())
 
 	// if user change any of letter from the token we provided,user will be faced with an error
 	if !emailIsValid(email) {
 		helpers.MyAbort(c, "Check your email type!!!")
 		return
-	} else if second > 30 {
+		// code will be valid for 1 minute. / you can modify it however you like.
+	} else if second > 1 {
 		helpers.MyAbort(c, "Your code is expired")
 		return
 
