@@ -1,7 +1,7 @@
-# #mail-verification
+# mail-verification
 In this project I just created email-verification Code.
 
-#Setup
+# Setup
 Before run the program. Type 
 `go mod tidy` on terminal. 
 
